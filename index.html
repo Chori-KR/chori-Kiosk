@@ -8,6 +8,7 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
+    /* 💡 선생님의 오리지널 컬러와 폰트 설정 완벽 유지 */
     :root { --teal: #20c997; --teal-dark: #12b886; --navy: #0a192f; --bg: #f8f9fa; --text: #212529; --sub: #868e96; --red: #fa5252; --white: #ffffff; }
     body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); margin: 0; overflow: hidden; height: 100vh; color: var(--text); }
     
@@ -30,35 +31,21 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      margin-bottom: 8px; /* 닫혀있을 때 간격 */
+      margin-bottom: 8px;
       font-weight: bold;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       position: relative;
-      z-index: 2; /* 영수증보다 위로 올라오게 */
+      z-index: 2;
     }
     .receipt-summary:active { transform: scale(0.98); }
     
-    .receipt-details {
-      display: none; /* 기본적으로 숨겨둠 */
-      margin-bottom: 24px;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    .chevron {
-      margin-left: 12px;
-      font-size: 14px;
-      color: var(--sub); /* 화살표 색상 */
-    }
+    .receipt-details { display: none; margin-bottom: 24px; animation: fadeIn 0.3s ease; }
+    .chevron { margin-left: 12px; font-size: 14px; color: var(--sub); }
 
     .retro-receipt {
-      background: #fcfcfc;
-      border: 1px solid #ddd;
-      /* 💡 요약창 아래에서 자연스럽게 빠져나오는 느낌을 줍니다 */
-      margin-top: -20px; 
-      padding: 36px 20px 20px 20px; 
-      border-radius: 0 0 16px 16px; 
-      font-family: 'Courier New', Courier, monospace;
-      color: #333;
+      background: #fcfcfc; border: 1px solid #ddd; margin-top: -20px; 
+      padding: 36px 20px 20px 20px; border-radius: 0 0 16px 16px; 
+      font-family: 'Courier New', Courier, monospace; color: #333;
       box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
     }
     .retro-header { text-align: center; margin-bottom: 16px; }
@@ -68,7 +55,6 @@
     .retro-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; }
     .retro-total { text-align: right; font-size: 18px; font-weight: 900; margin-top: 12px; color: var(--navy); }
 
-    /* 모달 및 로딩 CSS */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.2s; }
     .modal { background: var(--white); padding: 24px; border-radius: 16px; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
     .modal h3 { margin: 0 0 16px; color: var(--navy); }
@@ -81,12 +67,12 @@
     .spinner { width: 40px; height: 40px; border: 4px solid var(--teal); border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* 반응형 그리드 시스템 */
     .responsive-grid { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); align-content: start; }
     @media (min-width: 600px) { .responsive-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (min-width: 1024px) { .responsive-grid { grid-template-columns: repeat(6, 1fr); } }
 
-    .kiosk-container { flex: 1; overflow-y: auto; padding: 16px; min-height: 0; }
+    /* 💡 스크롤 맨 밑까지 내렸을 때 고정된 장바구니에 상품이 가려지지 않도록 하단 패딩 260px 추가 */
+    .kiosk-container { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 260px; min-height: 0; }
     
     .p-card { background: var(--white); border: 1px solid #ddd; border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; position: relative; }
     .p-card:active { transform: scale(0.95); }
@@ -104,17 +90,18 @@
     .tab { padding: 8px 16px; border-radius: 20px; background: #f1f5f9; color: var(--sub); font-weight: bold; border: none; cursor: pointer; font-size: 14px; }
     .tab.active { background: var(--navy); color: var(--white); }
 
-    /* 💡 장바구니 하단 상시 고정 (display: flex 로 변경됨) */
+    /* 💡 핵심 수정: 장바구니 화면 하단 영구 고정 (position: fixed) */
     #cart-panel { 
+      position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box;
       background: var(--navy); color: var(--white); border-radius: 24px 24px 0 0; 
       padding: 20px; display: flex; flex-direction: column; 
-      box-shadow: 0 -5px 20px rgba(0,0,0,0.3); z-index: 100; flex-shrink: 0; 
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.4); z-index: 1000;
       max-height: 40vh; 
     }
     .cart-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .cart-items { overflow-y: auto; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex: 1; }
     .cart-item { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center; }
-    .btn-pay { background: var(--teal); color: var(--white); border: none; padding: 14px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; flex-shrink: 0; transition: opacity 0.2s;}
+    .btn-pay { background: var(--teal); color: var(--white); border: none; padding: 14px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; width: 100%; flex-shrink: 0; transition: opacity 0.2s; }
 
     .qr-page { text-align: center; padding: 24px; flex: 1; overflow-y: auto; }
     #qr-code { background: #fff; padding: 16px; display: inline-block; border-radius: 16px; margin-bottom: 20px; border: 1px solid #eee; }
@@ -124,20 +111,17 @@
     .receipt-total { border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px; font-weight: 900; font-size: 18px; color: var(--teal); text-align: right; }
     .btn-cancel { background: #f1f5f9; color: var(--sub); border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; flex-shrink: 0; }
 
-    /* 관리자 화면 분할 레이아웃 */
     .admin-split-layout { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
     @media (min-width: 768px) {
       .admin-split-layout { flex-direction: row; }
       .admin-left-panel { width: 320px; padding: 16px; overflow-y: auto; border-right: 1px solid #eee; flex-shrink: 0; background: var(--white); }
       .admin-right-panel { flex: 1; padding: 16px; overflow-y: auto; background: var(--bg); }
     }
-
     .ad-p-item { position: relative; background: #fff; padding: 8px; border-radius: 12px; text-align: center; border: 1px solid #ddd; cursor: pointer; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .ad-p-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 6px; }
     .ad-p-item .del-x { position: absolute; top: -8px; right: -8px; background: var(--red); color: #fff; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #fff; cursor: pointer; z-index: 2; }
     .ad-p-item .name { font-size: 13px; font-weight: bold; color: var(--navy); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 2px; }
     .ad-p-item .stock { font-size: 11px; color: var(--sub); }
-
     input, select { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; width: 100%; box-sizing: border-box; }
     .btn-main { background: var(--teal); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
     .brand-img { width: 140px; margin: 0 auto 20px auto; display: block; }
@@ -145,10 +129,7 @@
     @media print {
       body * { visibility: hidden; } 
       #print-area, #print-area * { visibility: visible; } 
-      #print-area { 
-        position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); 
-        width: 100%; text-align: center; margin: 0; padding: 0; box-shadow: none; border: none; 
-      }
+      #print-area { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); width: 100%; text-align: center; margin: 0; padding: 0; box-shadow: none; border: none; }
       #print-area img, #print-area canvas { width: 400px !important; height: 400px !important; margin: 0 auto; display: block; }
       #print-title { font-size: 42px !important; margin-bottom: 20px !important; color: #000 !important; }
       #print-desc { font-size: 24px !important; margin-bottom: 50px !important; color: #333 !important; }
@@ -280,27 +261,21 @@
       <div class="responsive-grid" id="kiosk-list"></div>
     </div>
     
-    <!-- 💡 수정된 주문내역(장바구니) 하단 고정 UI -->
+    <!-- 💡 수정 및 고정된 장바구니 영역 (취소버튼 날림, 비우기버튼만 유지) -->
     <div id="cart-panel">
       <div class="cart-top">
         <span style="font-weight:bold; font-size:18px;">🛒 주문 내역</span>
-        <!-- 비우기 버튼 추가 -->
         <button onclick="clearCart()" style="background:rgba(255,255,255,0.2); color:var(--white); border:none; padding:6px 14px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer;">비우기</button>
       </div>
       <div class="cart-items" id="cart-items">
-        <!-- 초기 빈 상태 안내문 -->
         <div style="text-align:center; color:rgba(255,255,255,0.6); padding:20px;">장바구니가 비어있어요</div>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; margin-top:8px;">
         <span style="font-size:14px; color:var(--white);">총 결제금액</span>
         <span id="cart-total-txt" style="font-weight:900; font-size:20px; color:var(--teal);">0원</span>
       </div>
-      <div style="display:flex; gap:10px;">
-        <!-- 취소 버튼 추가 -->
-        <button onclick="clearCart()" style="background:#f1f5f9; color:var(--navy); border:none; padding:14px; border-radius:12px; font-weight:bold; cursor:pointer; flex:1;">취소</button>
-        <!-- 결제 버튼 -->
-        <button class="btn-pay" id="btn-pay-action" onclick="requestPayment()" style="flex:2; opacity:0.5;" disabled>결제하기</button>
-      </div>
+      <!-- 결제 버튼이 화면을 꽉 채우도록 구성 -->
+      <button class="btn-pay" id="btn-pay-action" onclick="requestPayment()" style="opacity:0.5;" disabled>결제하기</button>
     </div>
   </div>
 
@@ -369,17 +344,13 @@
     </div>
 
     <div id="admin-invite" class="admin-tab-content" style="padding:24px; display:none; flex-direction:column; align-items:center; background:var(--bg); flex:1; overflow-y:auto;">
-      
       <div id="print-area" style="background:#fff; padding:40px 20px; border-radius:24px; box-shadow:0 4px 15px rgba(0,0,0,0.05); text-align:center; width:100%; max-width:500px;">
         <div id="print-title" style="font-size:26px; font-weight:900; color:var(--navy); margin-bottom:8px;">초리쌤 키오스크</div>
         <div id="print-desc" style="color:var(--sub); font-weight:bold; margin-bottom:24px;">스마트폰 카메라로 스캔하여 바로 입장하세요!</div>
-        
         <div id="invite-qr-code" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
       </div>
-      
       <button class="btn-main no-print" onclick="window.print()" style="margin-top:24px; width:100%; max-width:500px; font-size:18px; height:60px;">🖨️ A4 용지로 크게 인쇄하기</button>
     </div>
-
   </div>
 
   <script>
@@ -667,13 +638,13 @@
       updateCartUI();
     }
 
-    // 💡 1. 추가: 장바구니 비우기 함수
+    /* 💡 에러의 주범이었던 clearCart 함수 완벽히 복구 */
     function clearCart() {
       cart = [];
       updateCartUI();
     }
 
-    // 💡 1. 수정: 하단에 항상 고정되고, 비었을 때 메시지를 보여주는 UI 로직
+    /* 💡 결제 버튼 활성화 로직 완벽 복구 */
     function updateCartUI() {
       const list = document.getElementById('cart-items');
       const payBtn = document.getElementById('btn-pay-action');
@@ -682,12 +653,12 @@
         list.innerHTML = `<div style="text-align:center; color:rgba(255,255,255,0.6); padding:20px;">장바구니가 비어있어요</div>`;
         document.getElementById('cart-total-txt').innerText = "0원";
         payBtn.style.opacity = "0.5";
-        payBtn.disabled = true;
+        payBtn.disabled = true; // 비어있으면 결제버튼 비활성화
         return; 
       }
       
       payBtn.style.opacity = "1";
-      payBtn.disabled = false;
+      payBtn.disabled = false; // 물건이 담기면 결제버튼 즉시 활성화!
 
       let total = 0;
       list.innerHTML = cart.map(i => {
@@ -696,7 +667,6 @@
           <div class="cart-item">
             <span>${i.name}</span>
             <div style="display:flex; align-items:center; gap:8px;">
-              <!-- 💡 버튼 배경을 반투명하게 하여 원래 스타일과 어울리게 변경 -->
               <button onclick="event.stopPropagation(); updateCartCount('${i.name}', -1)" style="border:none; background:rgba(255,255,255,0.2); color:#fff; border-radius:6px; width:28px; height:28px; cursor:pointer;">-</button>
               <span style="font-weight:bold; width:16px; text-align:center;">${i.count}</span>
               <button onclick="event.stopPropagation(); updateCartCount('${i.name}', 1)" style="border:none; background:rgba(255,255,255,0.2); color:#fff; border-radius:6px; width:28px; height:28px; cursor:pointer;">+</button>
@@ -708,7 +678,7 @@
     }
 
     async function requestPayment() {
-      if (cart.length === 0) return; // 장바구니 비었을 땐 작동안함
+      if (cart.length === 0) return; 
       const total = cart.reduce((s, i) => s + i.price * i.count, 0);
       const summary = cart.map(i => `${i.name}x${i.count}`).join(', ');
       const res = await callApi('createPaymentRequest', [total, summary, cart]);
@@ -738,7 +708,7 @@
           isPollingActive = false; 
           clearInterval(pollInterval);
           await customAlert("결제가 성공적으로 완료되었습니다!");
-          clearCart(); // 결제 성공 후 비우기
+          clearCart(); 
           nav('kiosk-main');
         } else if (res.status === '잔액부족') {
           isPollingActive = false; 
@@ -878,7 +848,7 @@
       `).join('');
     }
 
-    // 💡 2. 수정: 관리자 자산 업데이트 후 입력칸 깔끔하게 비우기 적용
+    /* 💡 관리자 자산 업데이트 후 입력칸 깔끔하게 비우기 적용 */
     async function updateAsset() {
       const ids = Array.from(document.querySelectorAll('.as-check:checked')).map(cb => cb.value);
       const amtInput = document.getElementById('as-amt');
@@ -889,10 +859,7 @@
       if (res.success) { 
         await customAlert("자산이 일괄 반영되었습니다."); 
         amtInput.value = ''; // 입력칸 초기화
-        
-        // (선택) 지급 후 체크된 박스들도 모두 풀어주면 관리하기 더 편합니다.
-        document.querySelectorAll('.as-check:checked').forEach(cb => cb.checked = false);
-        
+        document.querySelectorAll('.as-check:checked').forEach(cb => cb.checked = false); // 체크박스 해제
         loadAdminStudents(); 
       }
     }
